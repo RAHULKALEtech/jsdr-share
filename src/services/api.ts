@@ -26,16 +26,42 @@ export interface SessionInfoResponse {
   error?: string;
 }
 
+// Configurable API base URL (empty string for relative localhost/proxy, or absolute backend URL like https://your-backend.onrender.com)
+const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB Chunk size for ultra-fast multi-file streaming
 
-export async function createSession(): Promise<CreateSessionResponse> {
-  const res = await fetch('/api/transfer/create', { method: 'POST' });
+/**
+ * Safely parse JSON response with fallback error handling
+ */
+async function parseJsonResponse(res: Response): Promise<any> {
+  const contentType = res.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) {
+    const text = await res.text().catch(() => '');
+    throw new Error(
+      res.status === 404
+        ? 'Backend API route not found. If hosted on Netlify, ensure backend server URL (VITE_API_URL) is configured.'
+        : `Server returned non-JSON response (${res.status}): ${text.slice(0, 100)}`
+    );
+  }
   return res.json();
 }
 
+export async function createSession(): Promise<CreateSessionResponse> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/transfer/create`, { method: 'POST' });
+    return await parseJsonResponse(res);
+  } catch (err: any) {
+    return { success: false, sessionId: '', code: '', expiresAt: 0, shareUrl: '', error: err.message };
+  }
+}
+
 export async function getSessionInfo(identifier: string): Promise<SessionInfoResponse> {
-  const res = await fetch(`/api/transfer/${encodeURIComponent(identifier)}/info`);
-  return res.json();
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/transfer/${encodeURIComponent(identifier)}/info`);
+    return await parseJsonResponse(res);
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
 }
 
 export async function uploadFileChunked(
@@ -59,7 +85,7 @@ export async function uploadFileChunked(
       const formData = new FormData();
       formData.append('chunk', chunkBlob, file.name);
 
-      const res = await fetch(`/api/transfer/${sessionId}/upload-chunk`, {
+      const res = await fetch(`${API_BASE_URL}/api/transfer/${sessionId}/upload-chunk`, {
         method: 'POST',
         headers: {
           'x-file-id': fileId,
@@ -74,8 +100,8 @@ export async function uploadFileChunked(
       });
 
       if (!res.ok) {
-        const errorData = await res.json().catch(() => ({ error: 'Upload chunk failed' }));
-        throw new Error(errorData.error || `Chunk ${chunkIndex + 1} upload failed`);
+        const errorData = await parseJsonResponse(res).catch(e => ({ error: e.message }));
+        throw new Error(errorData.error || `Chunk ${chunkIndex + 1} upload failed (${res.status})`);
       }
 
       const uploadedBytes = end;
@@ -90,9 +116,9 @@ export async function uploadFileChunked(
 }
 
 export function getDownloadUrl(sessionId: string, fileId: string, inline: boolean = false): string {
-  return `/api/transfer/${sessionId}/download/${fileId}${inline ? '?inline=true' : ''}`;
+  return `${API_BASE_URL}/api/transfer/${sessionId}/download/${fileId}${inline ? '?inline=true' : ''}`;
 }
 
 export function getZipDownloadUrl(sessionId: string): string {
-  return `/api/transfer/${sessionId}/download-zip`;
+  return `${API_BASE_URL}/api/transfer/${sessionId}/download-zip`;
 }
