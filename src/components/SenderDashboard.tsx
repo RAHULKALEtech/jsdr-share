@@ -119,7 +119,7 @@ export const SenderDashboard: React.FC<SenderDashboardProps> = ({
   const totalPackageSize = files.reduce((acc, item) => acc + item.file.size, 0);
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8 animate-fadeIn">
+    <div className="app-view max-w-5xl mx-auto px-4 py-8 animate-fadeIn">
       {/* Navigation Header */}
       <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/10">
         <button

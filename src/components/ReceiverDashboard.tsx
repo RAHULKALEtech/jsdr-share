@@ -121,7 +121,7 @@ export const ReceiverDashboard: React.FC<ReceiverDashboardProps> = ({ sessionDat
   const isAllSelected = selectedFileIds.length === sessionData.files.length;
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8 animate-fadeIn">
+    <div className="app-view max-w-5xl mx-auto px-4 py-8 animate-fadeIn">
       {/* Header Navigation */}
       <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/10">
         <button
@@ -143,7 +143,7 @@ export const ReceiverDashboard: React.FC<ReceiverDashboardProps> = ({ sessionDat
       </div>
 
       {/* Main Receiver Content Container */}
-      <div className="glass-card rounded-3xl p-6 sm:p-10 border border-white/10 shadow-2xl">
+       <div className="surface-card glass-card rounded-3xl p-6 sm:p-10 border border-white/10 shadow-2xl">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 pb-6 border-b border-white/10">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-2">
