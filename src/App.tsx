@@ -154,7 +154,7 @@ export const App: React.FC = () => {
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
 
       <footer className="app-footer relative z-10 py-6 border-t border-white/10 text-center text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col items-center justify-center gap-3">
           <p>© {new Date().getFullYear()} JSDR Share. Secure Zero-Compression File Transfer.</p>
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
             <span className="hover:text-slate-400">SHA-256 Bit Integrity</span>
