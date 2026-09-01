@@ -1,0 +1,1 @@
+- [Preview layout centering](ui-preview-layout.md) — explicit width gutters plus auto margins keep shared panels centered reliably in the Replit preview.
