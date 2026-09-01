@@ -200,8 +200,8 @@ export const ReceiveView: React.FC<ReceiveViewProps> = ({
   const isCodeComplete = otpDigits.join('').length === 5;
 
   return (
-    <div className="max-w-xl mx-auto px-4 py-8 animate-fadeIn">
-      <div className="glass-card rounded-3xl p-6 sm:p-10 border border-white/10 shadow-2xl">
+    <div className="app-view max-w-xl mx-auto px-4 py-8 animate-fadeIn">
+      <div className="surface-card glass-card rounded-3xl p-6 sm:p-10 border border-white/10 shadow-2xl">
         <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/10">
           <div>
             <h2 className="text-2xl font-extrabold text-white font-heading">Receive Files</h2>
