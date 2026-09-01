@@ -97,7 +97,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden">
+    <div className="app-shell min-h-screen flex flex-col relative overflow-hidden">
       {/* Background Radiant Glow Blobs */}
       <div className="glow-blob glow-indigo w-[600px] h-[600px] -top-40 -left-40 animate-glow" />
       <div className="glow-blob glow-purple w-[500px] h-[500px] top-1/2 -right-40 animate-glow" style={{ animationDelay: '-3.5s' }} />
@@ -109,7 +109,7 @@ export const App: React.FC = () => {
         showHomeButton={currentView !== 'HOME'}
       />
 
-      <main className="flex-1 relative z-10">
+      <main className="app-main flex-1 relative z-10">
         {currentView === 'HOME' && (
           <HomeView
             onSelectSend={() => setCurrentView('SEND')}
@@ -153,16 +153,19 @@ export const App: React.FC = () => {
 
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
 
-      <footer className="relative z-10 py-6 border-t border-white/10 text-center text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <footer className="app-footer relative z-10 py-6 border-t border-white/10 text-center text-xs text-slate-500">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col items-center justify-center gap-3">
           <p>© {new Date().getFullYear()} JSDR Share. Secure Zero-Compression File Transfer.</p>
-          <div className="flex items-center space-x-4">
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
             <span className="hover:text-slate-400">SHA-256 Bit Integrity</span>
             <span>•</span>
             <span className="hover:text-slate-400">Chunked Streaming</span>
             <span>•</span>
             <span className="hover:text-slate-400">Auto Storage Cleanup</span>
           </div>
+          <p className="footer-credit">
+            Developed by <strong>Rahul Sunil Kale</strong>
+          </p>
         </div>
       </footer>
     </div>
