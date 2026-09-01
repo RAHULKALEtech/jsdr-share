@@ -1,1 +1,2 @@
 - [Preview layout centering](ui-preview-layout.md) — explicit width gutters plus auto margins keep shared panels centered reliably in the Replit preview.
+- [GitHub sync path](github-sync-api.md) — when Git HTTPS auth is unavailable, use the attached GitHub connector's authenticated Contents API for serialized file updates.
