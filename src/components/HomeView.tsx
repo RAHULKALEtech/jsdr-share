@@ -8,14 +8,14 @@ interface HomeViewProps {
 
 export const HomeView: React.FC<HomeViewProps> = ({ onSelectSend, onSelectReceive }) => {
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8 sm:py-12 lg:py-16 animate-fadeIn">
+    <div className="home-view max-w-5xl mx-auto px-4 py-8 sm:py-12 lg:py-16 animate-fadeIn">
       {/* Hero Section */}
-      <div className="text-center space-y-4 mb-12 sm:mb-16">
+      <div className="hero-copy text-center space-y-4 mb-12 sm:mb-16">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-bold tracking-wider uppercase">
           <Zap className="w-3.5 h-3.5 animate-pulse text-indigo-400" /> Direct Device-to-Device Transfer
         </div>
 
-        <h1 className="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight font-heading">
+        <h1 className="hero-title text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight font-heading">
           Transfer Any File with <br className="hidden sm:inline" />
           <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
             Original 100% Quality
@@ -32,7 +32,15 @@ export const HomeView: React.FC<HomeViewProps> = ({ onSelectSend, onSelectReceiv
         {/* SEND CARD */}
         <div
           onClick={onSelectSend}
-          className="group relative cursor-pointer glass-card rounded-3xl p-8 sm:p-10 flex flex-col justify-between overflow-hidden border border-white/10 hover:border-indigo-500/50 hover:shadow-2xl hover:shadow-indigo-500/20 transition-all duration-300 transform hover:-translate-y-1.5"
+          className="home-action-card group relative cursor-pointer glass-card rounded-3xl p-8 sm:p-10 flex flex-col justify-between overflow-hidden border border-white/10 hover:border-indigo-500/50 hover:shadow-2xl hover:shadow-indigo-500/20 transition-all duration-300 transform hover:-translate-y-1.5"
+          role="button"
+          tabIndex={0}
+          onKeyDown={e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onSelectSend();
+            }
+          }}
         >
           {/* Background Glow Accent */}
           <div className="absolute -top-24 -right-24 w-48 h-48 bg-indigo-500/20 rounded-full blur-3xl group-hover:bg-indigo-500/35 transition-all" />
@@ -67,7 +75,15 @@ export const HomeView: React.FC<HomeViewProps> = ({ onSelectSend, onSelectReceiv
         {/* RECEIVE CARD */}
         <div
           onClick={onSelectReceive}
-          className="group relative cursor-pointer glass-card rounded-3xl p-8 sm:p-10 flex flex-col justify-between overflow-hidden border border-white/10 hover:border-purple-500/50 hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-300 transform hover:-translate-y-1.5"
+          className="home-action-card group relative cursor-pointer glass-card rounded-3xl p-8 sm:p-10 flex flex-col justify-between overflow-hidden border border-white/10 hover:border-purple-500/50 hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-300 transform hover:-translate-y-1.5"
+          role="button"
+          tabIndex={0}
+          onKeyDown={e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onSelectReceive();
+            }
+          }}
         >
           {/* Background Glow Accent */}
           <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/20 rounded-full blur-3xl group-hover:bg-purple-500/35 transition-all" />
@@ -102,7 +118,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onSelectSend, onSelectReceiv
 
       {/* Feature Highlights Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
-        <div className="p-5 rounded-2xl glass-card border border-white/10 flex items-start gap-4 hover:border-white/20 transition-all">
+        <div className="feature-card p-5 rounded-2xl glass-card border border-white/10 flex items-start gap-4 hover:border-white/20 transition-all">
           <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 shrink-0">
             <FileCheck className="w-5 h-5" />
           </div>
@@ -112,7 +128,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onSelectSend, onSelectReceiv
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl glass-card border border-white/10 flex items-start gap-4 hover:border-white/20 transition-all">
+        <div className="feature-card p-5 rounded-2xl glass-card border border-white/10 flex items-start gap-4 hover:border-white/20 transition-all">
           <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 shrink-0">
             <Lock className="w-5 h-5" />
           </div>
@@ -122,7 +138,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onSelectSend, onSelectReceiv
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl glass-card border border-white/10 flex items-start gap-4 hover:border-white/20 transition-all">
+        <div className="feature-card p-5 rounded-2xl glass-card border border-white/10 flex items-start gap-4 hover:border-white/20 transition-all">
           <div className="p-3 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 shrink-0">
             <Zap className="w-5 h-5" />
           </div>
