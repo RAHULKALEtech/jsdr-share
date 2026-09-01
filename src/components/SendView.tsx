@@ -170,8 +170,8 @@ export const SendView: React.FC<SendViewProps> = ({ onSessionGenerated, onCancel
   const totalSize = selectedFiles.reduce((acc, f) => acc + f.file.size, 0);
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 animate-fadeIn">
-      <div className="glass-card rounded-3xl p-6 sm:p-10 border border-white/10 shadow-2xl">
+    <div className="app-view max-w-4xl mx-auto px-4 py-8 animate-fadeIn">
+      <div className="surface-card glass-card rounded-3xl p-6 sm:p-10 border border-white/10 shadow-2xl">
         {/* Header Alignment */}
         <div className="flex items-center justify-between gap-4 mb-8 pb-6 border-b border-white/10">
           <div>
