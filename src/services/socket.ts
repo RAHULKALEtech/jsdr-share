@@ -1,23 +1,41 @@
 import { io, Socket } from 'socket.io-client';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || undefined;
+const rawUrl = (import.meta.env.VITE_API_URL || '').trim();
+const socketUrl = rawUrl ? (rawUrl.endsWith('/') ? rawUrl.slice(0, -1) : rawUrl) : undefined;
 
-export const socket: Socket = io(API_BASE_URL, {
+export const socket: Socket = io(socketUrl, {
   autoConnect: true,
   transports: ['websocket', 'polling'],
+  timeout: 5000,
+  reconnectionAttempts: 5,
+  reconnectionDelay: 2000,
+});
+
+// Suppress unhandled connection errors when running in serverless / static environments
+socket.on('connect_error', (err) => {
+  // Silent fallback to HTTP polling
 });
 
 export function joinSenderRoom(sessionId: string) {
-  socket.emit('join_sender', { sessionId });
+  if (socket.connected) {
+    socket.emit('join_sender', { sessionId });
+  }
 }
 
 export function joinReceiverRoom(
   codeOrSessionId: string,
   callback: (response: { success: boolean; session?: any; error?: string }) => void
 ) {
-  socket.emit('join_receiver', { codeOrSessionId }, callback);
+  if (socket.connected) {
+    socket.emit('join_receiver', { codeOrSessionId }, callback);
+  } else {
+    // If socket is not connected, callback immediately with error so caller can use HTTP
+    callback({ success: false, error: 'Socket disconnected. Using HTTP fallback.' });
+  }
 }
 
-export function notifyReceiverAction(sessionId: string, action: 'VIEWING' | 'DOWNLOADING' | 'COMPLETED') {
-  socket.emit('receiver_action', { sessionId, action });
+export function notifyReceiverAction(sessionId: string, action: 'VIEWING' | 'DOWNLOADING' | 'COMPLETED' | string) {
+  if (socket.connected) {
+    socket.emit('receiver_action', { sessionId, action });
+  }
 }

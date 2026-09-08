@@ -3,6 +3,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { Copy, Check, QrCode, Clock, ShieldCheck, Users, Download, ArrowLeft, CheckCircle2, PackageCheck } from 'lucide-react';
 import { SelectedFileItem } from './SendView';
 import { formatBytes, formatTimeRemaining, formatHash, getFileTypeCategory } from '../utils/formatters';
+import { getSessionInfo } from '../services/api';
 import { socket, joinSenderRoom } from '../services/socket';
 
 interface SenderDashboardProps {
@@ -37,15 +38,17 @@ export const SenderDashboard: React.FC<SenderDashboardProps> = ({
     // Join Socket room as Sender
     joinSenderRoom(sessionData.sessionId);
 
-    // Socket Event Listeners
-    socket.on('receiver_connected', () => {
-      setReceiverStatus('CONNECTED');
+    const handleReceiverConnected = () => {
+      setReceiverStatus(prev => (prev === 'WAITING' ? 'CONNECTED' : prev));
       setReceiverActivity('Receiver connected! Viewing files...');
       onShowToast('info', 'Receiver Connected', 'Receiver is now connected to your transfer session.');
-    });
+    };
 
-    socket.on('receiver_status_update', (data: { action: string }) => {
-      if (data.action === 'DOWNLOADING') {
+    const handleStatusUpdate = (data: { action: string }) => {
+      if (data.action === 'VIEWING') {
+        setReceiverStatus('CONNECTED');
+        setReceiverActivity('Receiver connected! Viewing files...');
+      } else if (data.action === 'DOWNLOADING') {
         setReceiverStatus('DOWNLOADING');
         setReceiverActivity('Receiver is downloading files...');
       } else if (data.action === 'COMPLETED') {
@@ -56,7 +59,34 @@ export const SenderDashboard: React.FC<SenderDashboardProps> = ({
         setReceiverStatus('WAITING');
         setReceiverActivity('Receiver disconnected. Waiting for reconnect...');
       }
-    });
+    };
+
+    // Socket Event Listeners
+    socket.on('receiver_connected', handleReceiverConnected);
+    socket.on('receiver_status_update', handleStatusUpdate);
+
+    // HTTP Polling Fallback (ensures status updates even without WebSockets / on Vercel)
+    let isMounted = true;
+    const pollInterval = setInterval(async () => {
+      if (!isMounted) return;
+      try {
+        const info = await getSessionInfo(sessionData.sessionId);
+        if (!info || !info.success) return;
+
+        if (info.status === 'COMPLETED' || info.receiverAction === 'COMPLETED') {
+          setReceiverStatus('COMPLETED');
+          setReceiverActivity('Receiver has downloaded all files successfully!');
+        } else if (info.status === 'TRANSFERRING' || info.receiverAction === 'DOWNLOADING') {
+          setReceiverStatus('DOWNLOADING');
+          setReceiverActivity('Receiver is downloading files...');
+        } else if (info.status === 'RECEIVER_CONNECTED' || info.receiverAction === 'VIEWING' || info.receiverConnectedAt) {
+          setReceiverStatus(prev => (prev === 'WAITING' ? 'CONNECTED' : prev));
+          setReceiverActivity(prev => (prev.includes('Waiting') ? 'Receiver connected! Viewing files...' : prev));
+        }
+      } catch (e) {
+        // Silently ignore polling error
+      }
+    }, 2500);
 
     // Expiration Countdown Timer
     const timer = setInterval(() => {
@@ -68,9 +98,11 @@ export const SenderDashboard: React.FC<SenderDashboardProps> = ({
     }, 1000);
 
     return () => {
+      isMounted = false;
       clearInterval(timer);
-      socket.off('receiver_connected');
-      socket.off('receiver_status_update');
+      clearInterval(pollInterval);
+      socket.off('receiver_connected', handleReceiverConnected);
+      socket.off('receiver_status_update', handleStatusUpdate);
     };
   }, [sessionData.sessionId, sessionData.expiresAt, onShowToast]);
 

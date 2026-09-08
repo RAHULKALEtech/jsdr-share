@@ -15,6 +15,9 @@ export interface SessionInfoResponse {
   code?: string;
   status?: string;
   expiresAt?: number;
+  receiverAction?: string;
+  receiverConnectedAt?: number;
+  fileCount?: number;
   files?: Array<{
     id: string;
     originalName: string;
@@ -26,9 +29,10 @@ export interface SessionInfoResponse {
   error?: string;
 }
 
-// Configurable API base URL (empty string for relative localhost/proxy, or absolute backend URL like https://your-backend.onrender.com)
-const API_BASE_URL = import.meta.env.VITE_API_URL || '';
-const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB Chunk size for ultra-fast multi-file streaming
+// Configurable API base URL: normalize and trim any trailing slashes
+const rawBaseUrl = (import.meta.env.VITE_API_URL || '').trim();
+export const API_BASE_URL = rawBaseUrl.endsWith('/') ? rawBaseUrl.slice(0, -1) : rawBaseUrl;
+const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB Chunk size for multi-file streaming
 
 /**
  * Safely parse JSON response with fallback error handling
@@ -37,10 +41,15 @@ async function parseJsonResponse(res: Response): Promise<any> {
   const contentType = res.headers.get('content-type') || '';
   if (!contentType.includes('application/json')) {
     const text = await res.text().catch(() => '');
+    if (res.status === 405) {
+      throw new Error(
+        'Vercel returned 405 Method Not Allowed. The serverless API route is not mounted properly. Check vercel.json rewrites.'
+      );
+    }
     throw new Error(
       res.status === 404
-        ? 'Backend API route not found. Ensure the backend server URL (VITE_API_URL) is configured.'
-        : `Server returned non-JSON response (${res.status}): ${text.slice(0, 100)}`
+        ? 'Backend API route not found. Verify your server endpoint or VITE_API_URL environment variable.'
+        : `Server returned non-JSON response (${res.status}): ${text.slice(0, 120)}`
     );
   }
   return res.json();
@@ -48,7 +57,12 @@ async function parseJsonResponse(res: Response): Promise<any> {
 
 export async function createSession(): Promise<CreateSessionResponse> {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/transfer/create`, { method: 'POST' });
+    const res = await fetch(`${API_BASE_URL}/api/transfer/create`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
     return await parseJsonResponse(res);
   } catch (err: any) {
     return { success: false, sessionId: '', code: '', expiresAt: 0, shareUrl: '', error: err.message };
@@ -57,7 +71,30 @@ export async function createSession(): Promise<CreateSessionResponse> {
 
 export async function getSessionInfo(identifier: string): Promise<SessionInfoResponse> {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/transfer/${encodeURIComponent(identifier)}/info`);
+    const res = await fetch(`${API_BASE_URL}/api/transfer/${encodeURIComponent(identifier)}/info`, {
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
+    return await parseJsonResponse(res);
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+export async function updateSessionAction(
+  sessionId: string,
+  action: 'VIEWING' | 'DOWNLOADING' | 'COMPLETED' | 'RECEIVER_CONNECTED' | string
+): Promise<{ success: boolean; status?: string; receiverAction?: string; error?: string }> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/transfer/${encodeURIComponent(sessionId)}/action`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({ action }),
+    });
     return await parseJsonResponse(res);
   } catch (err: any) {
     return { success: false, error: err.message };

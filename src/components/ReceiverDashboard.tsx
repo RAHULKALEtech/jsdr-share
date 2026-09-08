@@ -3,7 +3,7 @@ import confetti from 'canvas-confetti';
 import { Download, Eye, ShieldCheck, Clock, CheckSquare, Square, Package, ArrowLeft } from 'lucide-react';
 import { FilePreviewModal } from './FilePreviewModal';
 import { formatBytes, formatTimeRemaining, formatHash, getFileTypeCategory } from '../utils/formatters';
-import { getDownloadUrl, getZipDownloadUrl } from '../services/api';
+import { getDownloadUrl, getZipDownloadUrl, updateSessionAction } from '../services/api';
 import { notifyReceiverAction } from '../services/socket';
 
 interface FileInfo {
@@ -37,9 +37,14 @@ export const ReceiverDashboard: React.FC<ReceiverDashboardProps> = ({ sessionDat
     sessionData.expiresAt - Date.now()
   );
 
+  const reportAction = (action: 'VIEWING' | 'DOWNLOADING' | 'COMPLETED') => {
+    notifyReceiverAction(sessionData.sessionId, action);
+    updateSessionAction(sessionData.sessionId, action).catch(() => {});
+  };
+
   useEffect(() => {
     // Notify sender that receiver is viewing files
-    notifyReceiverAction(sessionData.sessionId, 'VIEWING');
+    reportAction('VIEWING');
 
     const timer = setInterval(() => {
       setTimeRemaining(sessionData.expiresAt - Date.now());
@@ -64,7 +69,7 @@ export const ReceiverDashboard: React.FC<ReceiverDashboardProps> = ({ sessionDat
 
   const handleDownloadSingle = (fileId: string) => {
     setDownloadingFileId(fileId);
-    notifyReceiverAction(sessionData.sessionId, 'DOWNLOADING');
+    reportAction('DOWNLOADING');
 
     const downloadUrl = getDownloadUrl(sessionData.sessionId, fileId);
     const link = document.createElement('a');
@@ -78,7 +83,7 @@ export const ReceiverDashboard: React.FC<ReceiverDashboardProps> = ({ sessionDat
 
     setTimeout(() => {
       setDownloadingFileId(null);
-      notifyReceiverAction(sessionData.sessionId, 'COMPLETED');
+      reportAction('COMPLETED');
       onShowToast('success', 'Download Complete!', 'File saved with 100% original quality.');
       triggerConfetti();
     }, 1000);
@@ -86,7 +91,7 @@ export const ReceiverDashboard: React.FC<ReceiverDashboardProps> = ({ sessionDat
 
   const handleDownloadAllSelected = () => {
     setIsDownloadingAll(true);
-    notifyReceiverAction(sessionData.sessionId, 'DOWNLOADING');
+    reportAction('DOWNLOADING');
 
     const zipUrl = getZipDownloadUrl(sessionData.sessionId);
     const link = document.createElement('a');
@@ -100,7 +105,7 @@ export const ReceiverDashboard: React.FC<ReceiverDashboardProps> = ({ sessionDat
 
     setTimeout(() => {
       setIsDownloadingAll(false);
-      notifyReceiverAction(sessionData.sessionId, 'COMPLETED');
+      reportAction('COMPLETED');
       onShowToast('success', 'ZIP Package Downloaded!', 'All selected files downloaded successfully.');
       triggerConfetti();
     }, 1500);

@@ -67,22 +67,18 @@ Open [http://localhost:5000](http://localhost:5000) in your web browser.
 
 ## ☁️ Vercel Deployment
 
-Vercel is configured for the Vite/React frontend through `vercel.json`. The
-existing Express and Socket.IO backend should run separately on a public,
-long-running Node.js host because active transfers use in-memory sessions and
-local upload storage.
+JSDR Share is ready to deploy directly to Vercel:
 
-Before deploying the frontend, add this Vercel environment variable to
-Production, Preview, and Development:
+1. **Direct All-In-One Deployment (Default)**:
+   Import this repository to Vercel and deploy. `vercel.json` automatically configures the frontend and the `/api` serverless backend functions with zero extra setup needed.
 
-```text
-VITE_API_URL=https://your-public-backend.example.com
-```
+2. **Optional External Backend (`VITE_API_URL`)**:
+   If you deploy the Express server separately (on Render, Railway, Fly.io) for dedicated WebSocket channels, set this environment variable in your Vercel project:
+   ```text
+   VITE_API_URL=https://your-public-backend.example.com
+   ```
 
-Use the backend's public HTTPS origin without a trailing slash. It powers both
-the `/api/transfer` requests and the Socket.IO connection. See
-[`docs/vercel-deployment.md`](docs/vercel-deployment.md) for the complete
-deployment checklist.
+See [`docs/vercel-deployment.md`](docs/vercel-deployment.md) for full details.
 
 ---
 
