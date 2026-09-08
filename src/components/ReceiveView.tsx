@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { QrCode, KeyRound, Camera, AlertCircle, ArrowRight, Upload, X, ScanLine } from 'lucide-react';
+import { QrCode, KeyRound, Camera, AlertCircle, ArrowRight, Upload, X } from 'lucide-react';
 import { Html5Qrcode } from 'html5-qrcode';
+import { getSessionInfo, updateSessionAction } from '../services/api';
 import { joinReceiverRoom } from '../services/socket';
 
 interface ReceiveViewProps {
@@ -86,21 +87,37 @@ export const ReceiveView: React.FC<ReceiveViewProps> = ({
     }
   };
 
-  const handleConnectWithCode = (code: string) => {
-    if (code.length !== 5) return;
+  const handleConnectWithCode = async (code: string) => {
+    if (code.length !== 5 || isConnecting) return;
     setIsConnecting(true);
     setErrorMessage(null);
 
-    joinReceiverRoom(code, response => {
-      setIsConnecting(false);
-      if (response.success && response.session) {
+    try {
+      // Step 1: Use HTTP API directly for instant verification & full serverless compatibility
+      const res = await getSessionInfo(code);
+
+      if (res.success && res.sessionId) {
+        // Step 2: Notify backend that receiver joined & is viewing files
+        updateSessionAction(res.sessionId, 'VIEWING').catch(() => {});
+
+        // Step 3: Also join Socket room if WebSocket is connected
+        joinReceiverRoom(code, () => {});
+
+        setIsConnecting(false);
         onShowToast('success', 'Connected!', 'Joined transfer session successfully.');
-        onSessionConnected(response.session);
+        onSessionConnected(res);
       } else {
-        setErrorMessage(response.error || 'Failed to connect. Please verify your 5-digit transfer code.');
-        onShowToast('error', 'Connection Failed', response.error || 'Invalid 5-digit code.');
+        setIsConnecting(false);
+        const err = res.error || 'Failed to connect. Please verify your 5-digit transfer code.';
+        setErrorMessage(err);
+        onShowToast('error', 'Connection Failed', err);
       }
-    });
+    } catch (err: any) {
+      setIsConnecting(false);
+      const errMsg = err.message || 'Connection error. Please try again.';
+      setErrorMessage(errMsg);
+      onShowToast('error', 'Connection Error', errMsg);
+    }
   };
 
   const startCameraScanner = async () => {
@@ -131,7 +148,7 @@ export const ReceiveView: React.FC<ReceiveViewProps> = ({
             }
           }
 
-          if (extractedCode) {
+          if (extractedCode && extractedCode.length === 5) {
             setOtpDigits(extractedCode.split(''));
             setActiveTab('CODE');
             onShowToast('success', 'QR Code Scanned!', 'Connecting to transfer session...');
@@ -186,10 +203,13 @@ export const ReceiveView: React.FC<ReceiveViewProps> = ({
             extractedCode = match[1];
           }
         }
-        if (extractedCode) {
+        if (extractedCode && extractedCode.length === 5) {
           setActiveTab('CODE');
+          setOtpDigits(extractedCode.split(''));
           onShowToast('success', 'QR Image Read Successfully!', 'Connecting...');
           handleConnectWithCode(extractedCode);
+        } else {
+          setErrorMessage('Could not extract 5-digit code from QR image.');
         }
       } catch (err) {
         setErrorMessage('Could not read valid QR code from uploaded image.');

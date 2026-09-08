@@ -1,55 +1,70 @@
 # Deploying JSDR Share on Vercel
 
-## Deployment model
+JSDR Share supports two deployment models on Vercel:
 
-Vercel hosts the Vite/React frontend for this project. The Express and Socket.IO
-backend must run on a public, long-running Node.js host because the current
-transfer service keeps active sessions in memory and writes uploaded chunks to
-local disk.
+---
 
-Do not move the current `server/` implementation into a Vercel Function unless
-the session and upload storage are first migrated to durable shared services.
-Function instances are independent and their local filesystem is temporary.
+## Model 1: All-In-One Vercel Deployment (Default & Zero Setup)
 
-## Vercel project settings
+In this model, Vercel hosts both the **Vite/React frontend** and the **Serverless API functions** (`api/index.ts`).
 
-The repository includes `vercel.json` with these production settings:
+### How It Works:
+- `vercel.json` automatically routes `/api/*` requests to the Serverless Function in `api/index.ts`.
+- Non-API routes serve the optimized Vite single-page application (`dist/index.html`).
+- File uploads are securely handled in the `/tmp` directory (`os.tmpdir()`), and sessions are persisted to disk to survive container reuse.
+- Real-time synchronization uses an automatic **Dual-Layer Engine**: WebSockets when available + periodic HTTP REST fallback (`POST /api/transfer/:sessionId/action` and `GET /api/transfer/:identifier/info`).
 
-- Framework preset: Vite
-- Build command: `npm run build`
-- Output directory: `dist`
-- SPA fallback: all browser routes serve `index.html`
-- Immutable caching for Vite's hashed `/assets/` files
+### Setup Steps:
+1. Import this repository into Vercel.
+2. Leave all settings at defaults (Framework: Vite, Build Command: `npm run build`, Output Directory: `dist`).
+3. Deploy! No environment variables required for basic zero-setup transfers.
 
-## Required environment variable
+---
 
-Set this Vercel environment variable for Production, Preview, and Development:
+## Model 2: Split Frontend on Vercel + Dedicated WebSocket Backend (High Volume)
+
+If you plan to handle high-frequency concurrent file transfers with long-lived WebSocket connections, you can deploy the backend (`server/server.ts`) to a persistent Node.js host (Render, Railway, Fly.io, or VPS) and point Vercel to it.
+
+### Required Environment Variable on Vercel:
+Set this variable in your Vercel Project Settings (Production, Preview, Development):
 
 ```text
 VITE_API_URL=https://your-public-backend.example.com
 ```
 
-Use the public HTTPS origin of the deployed Express/Socket.IO backend. Do not
-use `localhost` or a private development URL. The value should not end with a
-slash.
+- Use the backend's public HTTPS origin without a trailing slash.
+- The frontend will automatically use this origin for `/api/transfer` REST endpoints and real-time Socket.IO connections.
 
-The frontend uses this origin for both:
+---
 
-- REST requests under `/api/transfer`
-- Socket.IO connections
+## Vercel Configuration Summary (`vercel.json`)
 
-The backend must allow the Vercel project origin through its CORS policy and
-must expose Socket.IO at its default `/socket.io` path.
-
-## Deploy
-
-1. Import the repository into Vercel.
-2. Keep the repository root as the project root.
-3. Add `VITE_API_URL` in the Vercel project environment settings.
-4. Deploy with the repository's default build settings.
-5. Test creating a transfer, uploading a file, joining with the PIN or QR
-   code, and downloading the file from a second device.
-
-The frontend-only Vercel deployment and the backend deployment are separate
-services. The Vercel build is expected to succeed without bundling the
-Express/Socket.IO process into a serverless function.
+```json
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vite",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index.ts"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ]
+}
+```

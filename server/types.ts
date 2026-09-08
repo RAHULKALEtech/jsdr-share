@@ -23,6 +23,8 @@ export interface TransferSession {
   receiverSocketId?: string;
   failedCodeAttempts: number;
   senderIp: string;
+  receiverAction?: string;
+  receiverConnectedAt?: number;
 }
 
 export interface ClientToServerEvents {
