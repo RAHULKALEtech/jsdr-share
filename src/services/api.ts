@@ -39,7 +39,7 @@ async function parseJsonResponse(res: Response): Promise<any> {
     const text = await res.text().catch(() => '');
     throw new Error(
       res.status === 404
-        ? 'Backend API route not found. If hosted on Netlify, ensure backend server URL (VITE_API_URL) is configured.'
+        ? 'Backend API route not found. Ensure the backend server URL (VITE_API_URL) is configured.'
         : `Server returned non-JSON response (${res.status}): ${text.slice(0, 100)}`
     );
   }
