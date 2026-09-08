@@ -1,0 +1,9 @@
+node_modules
+dist
+uploads
+.cache
+.local
+.agents
+.replit
+replit.md
+*.log
