@@ -126,21 +126,21 @@ export const ReceiverDashboard: React.FC<ReceiverDashboardProps> = ({ sessionDat
   const isAllSelected = selectedFileIds.length === sessionData.files.length;
 
   return (
-    <div className="app-view max-w-5xl mx-auto px-4 py-8 animate-fadeIn">
+    <div className="app-view max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10 animate-fadeIn">
       {/* Header Navigation */}
-      <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/10">
+      <div className="flex items-center justify-between gap-3 mb-6 sm:mb-8 pb-4 border-b border-white/10">
         <button
           onClick={onClose}
-          className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition-all text-sm font-semibold border border-white/10"
+          className="flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-2 rounded-2xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition-all text-xs sm:text-sm font-semibold border border-white/10 cursor-pointer active:scale-95"
         >
           <ArrowLeft className="w-4 h-4" /> Home
         </button>
 
-        <div className="flex items-center gap-3">
-          <div className="px-3.5 py-1.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-mono font-extrabold">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="px-3 sm:px-3.5 py-1.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-mono font-bold">
             PIN: {sessionData.code}
           </div>
-          <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-400 text-xs font-mono">
+          <div className="flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-400 text-xs font-mono">
             <Clock className="w-3.5 h-3.5 text-amber-400" />
             <span>{formatTimeRemaining(timeRemaining)}</span>
           </div>
@@ -148,13 +148,13 @@ export const ReceiverDashboard: React.FC<ReceiverDashboardProps> = ({ sessionDat
       </div>
 
       {/* Main Receiver Content Container */}
-       <div className="surface-card glass-card rounded-3xl p-6 sm:p-10 border border-white/10 shadow-2xl">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 pb-6 border-b border-white/10">
+      <div className="surface-card glass-card rounded-3xl p-5 sm:p-8 lg:p-10 border border-white/10 shadow-2xl">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 sm:gap-6 mb-6 sm:mb-8 pb-6 border-b border-white/10">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-2">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-2">
               <ShieldCheck className="w-3.5 h-3.5" /> 100% Uncompressed Original Binary
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white font-heading tracking-tight flex items-center gap-3">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white font-heading tracking-tight flex items-center gap-2.5">
               Transfer Package ({sessionData.files.length} {sessionData.files.length === 1 ? 'File' : 'Files'})
             </h2>
             <p className="text-xs sm:text-sm text-slate-400 mt-1">
@@ -166,7 +166,7 @@ export const ReceiverDashboard: React.FC<ReceiverDashboardProps> = ({ sessionDat
           <button
             onClick={handleDownloadAllSelected}
             disabled={selectedFileIds.length === 0 || isDownloadingAll}
-            className={`px-7 py-4 rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-bold text-xs sm:text-sm shadow-xl shadow-indigo-500/25 flex items-center justify-center gap-2.5 transition-all duration-300 ${
+            className={`w-full md:w-auto px-6 sm:px-7 py-3.5 sm:py-4 rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-bold text-xs sm:text-sm shadow-xl shadow-indigo-500/25 flex items-center justify-center gap-2.5 transition-all duration-300 cursor-pointer shrink-0 ${
               selectedFileIds.length === 0 || isDownloadingAll
                 ? 'opacity-50 cursor-not-allowed'
                 : 'hover:scale-[1.02] hover:shadow-indigo-500/40 active:scale-[0.98]'
@@ -187,10 +187,10 @@ export const ReceiverDashboard: React.FC<ReceiverDashboardProps> = ({ sessionDat
         </div>
 
         {/* Multi-Select Action Bar */}
-        <div className="flex items-center justify-between px-3.5 py-3 mb-4 rounded-xl bg-white/5 border border-white/10 text-xs text-slate-300">
+        <div className="flex items-center justify-between px-3.5 py-2.5 sm:py-3 mb-4 rounded-2xl bg-white/5 border border-white/10 text-xs text-slate-300">
           <button
             onClick={handleSelectAllToggle}
-            className="flex items-center gap-2.5 font-semibold hover:text-white transition-colors cursor-pointer"
+            className="flex items-center gap-2 font-semibold hover:text-white transition-colors cursor-pointer"
           >
             {isAllSelected ? (
               <CheckSquare className="w-4.5 h-4.5 text-indigo-400" />
@@ -214,16 +214,16 @@ export const ReceiverDashboard: React.FC<ReceiverDashboardProps> = ({ sessionDat
             return (
               <div
                 key={file.id}
-                className={`p-4 sm:p-5 rounded-2xl border transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
+                className={`p-3.5 sm:p-5 rounded-2xl border transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 ${
                   isSelected
                     ? 'bg-indigo-500/10 border-indigo-500/30 shadow-md'
                     : 'bg-white/5 border-white/10 hover:border-white/20'
                 }`}
               >
-                <div className="flex items-center gap-4 min-w-0 flex-1">
+                <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
                   <button
                     onClick={() => handleToggleSelect(file.id)}
-                    className="text-slate-400 hover:text-white transition-colors shrink-0"
+                    className="text-slate-400 hover:text-white transition-colors shrink-0 cursor-pointer"
                   >
                     {isSelected ? (
                       <CheckSquare className="w-5 h-5 text-indigo-400" />
@@ -232,39 +232,39 @@ export const ReceiverDashboard: React.FC<ReceiverDashboardProps> = ({ sessionDat
                     )}
                   </button>
 
-                  <span className={`px-2.5 py-1 rounded-lg text-[10px] font-extrabold border uppercase shrink-0 ${color}`}>
+                  <span className={`px-2 py-0.5 rounded-lg text-[9px] font-extrabold border uppercase shrink-0 ${color}`}>
                     {category}
                   </span>
 
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-bold text-white truncate">{file.originalName}</p>
-                    <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400 mt-1">
+                    <p className="text-xs sm:text-sm font-bold text-white truncate">{file.originalName}</p>
+                    <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 text-xs text-slate-400 mt-1">
                       <span>{formatBytes(file.size)}</span>
                       <span className="text-emerald-400/90 font-mono text-[10px] flex items-center gap-1">
-                        <ShieldCheck className="w-3 h-3 text-emerald-400" /> SHA-256: {formatHash(file.sha256)}
+                        <ShieldCheck className="w-3 h-3 text-emerald-400" /> SHA: {formatHash(file.sha256)}
                       </span>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2.5 self-end sm:self-center shrink-0">
+                <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
                   <button
                     onClick={() => setPreviewFile(file)}
-                    className="px-3.5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                    className="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer active:scale-95"
                     title="Preview file"
                   >
-                    <Eye className="w-4 h-4 text-purple-400" /> Preview
+                    <Eye className="w-3.5 h-3.5 text-purple-400" /> Preview
                   </button>
 
                   <button
                     onClick={() => handleDownloadSingle(file.id)}
                     disabled={downloadingFileId === file.id}
-                    className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-indigo-500/20 transition-all"
+                    className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-indigo-500/20 transition-all cursor-pointer active:scale-95"
                   >
                     {downloadingFileId === file.id ? (
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     ) : (
-                      <Download className="w-4 h-4" />
+                      <Download className="w-3.5 h-3.5" />
                     )}
                     <span>Download</span>
                   </button>

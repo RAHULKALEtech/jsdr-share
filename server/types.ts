@@ -4,6 +4,8 @@ export interface FileMetadata {
   mimeType: string;
   size: number;
   uploadedSize: number;
+  receivedChunks?: number[];
+  totalChunks?: number;
   sha256?: string;
   savedPath: string;
   status: 'UPLOADING' | 'READY' | 'ERROR';

@@ -99,8 +99,8 @@ export const App: React.FC = () => {
   return (
     <div className="app-shell min-h-screen flex flex-col relative overflow-hidden">
       {/* Background Radiant Glow Blobs */}
-      <div className="glow-blob glow-indigo w-[600px] h-[600px] -top-40 -left-40 animate-glow" />
-      <div className="glow-blob glow-purple w-[500px] h-[500px] top-1/2 -right-40 animate-glow" style={{ animationDelay: '-3.5s' }} />
+      <div className="glow-blob glow-indigo w-[320px] sm:w-[550px] h-[320px] sm:h-[550px] -top-32 -left-32 sm:-top-40 sm:-left-40 animate-glow" />
+      <div className="glow-blob glow-purple w-[280px] sm:w-[500px] h-[280px] sm:h-[500px] top-2/3 -right-32 sm:-right-40 animate-glow" style={{ animationDelay: '-3.5s' }} />
 
       <Navbar
         theme={theme}
@@ -109,7 +109,7 @@ export const App: React.FC = () => {
         showHomeButton={currentView !== 'HOME'}
       />
 
-      <main className="app-main flex-1 relative z-10">
+      <main className="app-main flex-1 relative z-10 flex flex-col justify-center py-2 sm:py-6">
         {currentView === 'HOME' && (
           <HomeView
             onSelectSend={() => setCurrentView('SEND')}
@@ -153,17 +153,17 @@ export const App: React.FC = () => {
 
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
 
-      <footer className="app-footer relative z-10 py-6 border-t border-white/10 text-center text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col items-center justify-center gap-3">
+      <footer className="app-footer relative z-10 py-5 sm:py-6 border-t border-white/10 text-center text-xs text-slate-500">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col items-center justify-center gap-2.5 sm:gap-3">
           <p>© {new Date().getFullYear()} JSDR Share. Secure Zero-Compression File Transfer.</p>
-          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+          <div className="flex flex-wrap items-center justify-center gap-x-3 sm:gap-x-4 gap-y-1 text-[11px] sm:text-xs">
             <span className="hover:text-slate-400">SHA-256 Bit Integrity</span>
             <span>•</span>
             <span className="hover:text-slate-400">Chunked Streaming</span>
             <span>•</span>
             <span className="hover:text-slate-400">Auto Storage Cleanup</span>
           </div>
-          <p className="footer-credit">
+          <p className="footer-credit text-[11px] sm:text-xs">
             Developed by <strong>Rahul Sunil Kale</strong>
           </p>
         </div>

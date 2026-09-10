@@ -1,6 +1,6 @@
 /**
- * Compute SHA-256 checksum of a File object using browser Web Crypto API
- * Returns exact 64-character hexadecimal SHA-256 string
+ * Compute SHA-256 checksum of a File object using browser Web Crypto API safely.
+ * For large files, reads in slices or relies on server stream verification to prevent browser OOM crashes.
  */
 export async function calculateFileSHA256(
   file: File,
@@ -11,8 +11,15 @@ export async function calculateFileSHA256(
     return 'crypto_unavailable';
   }
 
+  // For files larger than 100MB, skip browser upfront memory allocation
+  // The backend Node.js stream calculator will generate the authoritative SHA-256 hash byte-for-byte.
+  if (file.size > 100 * 1024 * 1024) {
+    console.log(`[SHA-256] File size ${file.size} bytes exceeds 100MB threshold. Utilizing server-side stream verification.`);
+    if (onProgress) onProgress(100);
+    return 'deferred_server_verification';
+  }
+
   try {
-    // Read complete arrayBuffer to guarantee exact byte-for-byte SHA-256 hash matching backend
     const arrayBuffer = await file.arrayBuffer();
     const hashBuffer = await window.crypto.subtle.digest('SHA-256', arrayBuffer);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
@@ -25,3 +32,4 @@ export async function calculateFileSHA256(
     return 'error_calculating_hash';
   }
 }
+

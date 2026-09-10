@@ -145,8 +145,40 @@ router.post('/:sessionId/action', (req: Request, res: Response): void => {
 });
 
 /**
+ * Fetch Upload Status & Received Chunks (For Resume & Sync)
+ */
+router.get('/:sessionId/upload-status/:fileId', (req: Request, res: Response): void => {
+  const sessionId = req.params.sessionId as string;
+  const fileId = req.params.fileId as string;
+  const session = sessionManager.getSessionById(sessionId);
+
+  if (!session) {
+    res.status(404).json({ success: false, error: 'Session expired or invalid.' });
+    return;
+  }
+
+  const file = session.files[fileId];
+  if (!file) {
+    res.json({ success: true, exists: false, uploadedSize: 0, receivedChunks: [] });
+    return;
+  }
+
+  res.json({
+    success: true,
+    exists: true,
+    fileId: file.id,
+    uploadedSize: file.uploadedSize,
+    totalSize: file.size,
+    status: file.status,
+    receivedChunks: file.receivedChunks || [],
+    totalChunks: file.totalChunks || 0,
+    sha256: file.sha256
+  });
+});
+
+/**
  * Upload Chunk Endpoint
- * Handles progressive file chunks to prevent loading entire files into memory
+ * Handles progressive, parallel chunk writing at explicit offsets
  */
 router.post('/:sessionId/upload-chunk', upload.single('chunk'), async (req: Request, res: Response): Promise<void> => {
   try {
@@ -171,6 +203,9 @@ router.post('/:sessionId/upload-chunk', upload.single('chunk'), async (req: Requ
     const totalChunksHeader = req.headers['x-total-chunks'] || req.body?.totalChunks;
     const totalChunks = parseInt((Array.isArray(totalChunksHeader) ? totalChunksHeader[0] : totalChunksHeader) || '1', 10);
 
+    const chunkSizeHeader = req.headers['x-chunk-size'] || req.body?.chunkSize;
+    const chunkSize = parseInt((Array.isArray(chunkSizeHeader) ? chunkSizeHeader[0] : chunkSizeHeader) || '5242880', 10);
+
     const mimeTypeHeader = req.headers['x-file-type'] || req.body?.fileType;
     const mimeType = (Array.isArray(mimeTypeHeader) ? mimeTypeHeader[0] : mimeTypeHeader) || 'application/octet-stream';
 
@@ -191,17 +226,19 @@ router.post('/:sessionId/upload-chunk', upload.single('chunk'), async (req: Requ
     const safeFileName = `${fileId}_${safeBaseName}`;
     const filePath = path.join(sessionFolder, safeFileName);
 
-    // If chunk 0 and file exists from previous partial attempt, truncate/remove it
-    if (chunkIndex === 0 && fs.existsSync(filePath)) {
-      try {
-        fs.unlinkSync(filePath);
-      } catch (e) {
-        // Ignored
-      }
+    // Create file if it doesn't exist yet
+    if (!fs.existsSync(filePath)) {
+      fs.writeFileSync(filePath, Buffer.alloc(0));
     }
 
-    // Append chunk buffer synchronously to destination file
-    fs.appendFileSync(filePath, req.file.buffer);
+    // Write chunk at exact byte offset (chunkIndex * chunkSize) for safe parallel writing
+    const startOffset = chunkIndex * chunkSize;
+    const fd = fs.openSync(filePath, 'r+');
+    try {
+      fs.writeSync(fd, req.file.buffer, 0, req.file.buffer.length, startOffset);
+    } finally {
+      fs.closeSync(fd);
+    }
 
     const stats = fs.statSync(filePath);
 
@@ -211,23 +248,36 @@ router.post('/:sessionId/upload-chunk', upload.single('chunk'), async (req: Requ
       mimeType,
       size: totalSize || stats.size,
       uploadedSize: stats.size,
+      receivedChunks: [],
+      totalChunks,
       savedPath: filePath,
       status: 'UPLOADING',
       createdAt: Date.now(),
     };
 
+    if (!fileMeta.receivedChunks) {
+      fileMeta.receivedChunks = [];
+    }
+
+    if (!fileMeta.receivedChunks.includes(chunkIndex)) {
+      fileMeta.receivedChunks.push(chunkIndex);
+    }
+
     fileMeta.uploadedSize = stats.size;
+    fileMeta.totalChunks = totalChunks;
     fileMeta.savedPath = filePath;
 
-    // Is this the last chunk?
-    if (chunkIndex >= totalChunks - 1 || stats.size >= (totalSize || stats.size)) {
+    // Is upload completed (all chunks arrived)?
+    const isCompleted = fileMeta.receivedChunks.length >= totalChunks || stats.size >= (totalSize || stats.size);
+
+    if (isCompleted) {
       fileMeta.status = 'READY';
 
-      // Compute SHA-256 hash using stream pipeline for 100% bit-for-bit integrity validation
+      // Compute SHA-256 hash using Node stream pipeline for 100% bit-for-bit integrity validation
       const computedHash = await computeFileSha256(filePath);
       fileMeta.sha256 = computedHash;
 
-      if (clientSha256 && clientSha256.toLowerCase() !== computedHash.toLowerCase()) {
+      if (clientSha256 && clientSha256 !== 'deferred_server_verification' && clientSha256.toLowerCase() !== computedHash.toLowerCase()) {
         console.warn(`[HASH MISMATCH] File ${fileName}: client ${clientSha256} vs server ${computedHash}`);
       }
     }
@@ -237,11 +287,13 @@ router.post('/:sessionId/upload-chunk', upload.single('chunk'), async (req: Requ
     res.json({
       success: true,
       fileId,
+      chunkIndex,
       uploadedSize: stats.size,
       totalSize: fileMeta.size,
       status: fileMeta.status,
       sha256: fileMeta.sha256,
-      progress: Math.min(100, Math.round((stats.size / (fileMeta.size || 1)) * 100))
+      receivedChunks: fileMeta.receivedChunks,
+      progress: Math.min(100, Math.round((fileMeta.receivedChunks.length / totalChunks) * 100))
     });
   } catch (err: any) {
     console.error('Upload chunk error:', err);

@@ -134,7 +134,7 @@ export const ReceiveView: React.FC<ReceiveViewProps> = ({
 
       await html5QrCode.start(
         { facingMode: 'environment' },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
+        { fps: 10, qrbox: { width: 220, height: 220 } },
         (decodedText) => {
           // Successfully scanned QR code!
           stopCameraScanner();
@@ -220,16 +220,16 @@ export const ReceiveView: React.FC<ReceiveViewProps> = ({
   const isCodeComplete = otpDigits.join('').length === 5;
 
   return (
-    <div className="app-view max-w-xl mx-auto px-4 py-8 animate-fadeIn">
-      <div className="surface-card glass-card rounded-3xl p-6 sm:p-10 border border-white/10 shadow-2xl">
-        <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/10">
+    <div className="app-view max-w-xl mx-auto px-4 sm:px-6 py-6 sm:py-10 animate-fadeIn">
+      <div className="surface-card glass-card rounded-3xl p-5 sm:p-8 lg:p-10 border border-white/10 shadow-2xl">
+        <div className="flex items-start justify-between gap-4 mb-6 sm:mb-8 pb-4 sm:pb-5 border-b border-white/10">
           <div>
-            <h2 className="text-2xl font-extrabold text-white font-heading">Receive Files</h2>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white font-heading">Receive Files</h2>
             <p className="text-xs sm:text-sm text-slate-400 mt-1">Scan QR Code or enter the 5-digit PIN.</p>
           </div>
           <button
             onClick={onCancel}
-            className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+            className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors cursor-pointer active:scale-95 shrink-0"
             title="Cancel"
           >
             <X className="w-5 h-5" />
@@ -237,10 +237,10 @@ export const ReceiveView: React.FC<ReceiveViewProps> = ({
         </div>
 
         {/* Tab Selection Bar */}
-        <div className="grid grid-cols-2 gap-2 p-1.5 rounded-2xl bg-white/5 border border-white/10 mb-8">
+        <div className="grid grid-cols-2 gap-2 p-1.5 rounded-2xl bg-white/5 border border-white/10 mb-6 sm:mb-8">
           <button
             onClick={() => handleTabSwitch('CODE')}
-            className={`py-3.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all ${
+            className={`py-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
               activeTab === 'CODE'
                 ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
                 : 'text-slate-400 hover:text-white'
@@ -251,7 +251,7 @@ export const ReceiveView: React.FC<ReceiveViewProps> = ({
 
           <button
             onClick={() => handleTabSwitch('QR')}
-            className={`py-3.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all ${
+            className={`py-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
               activeTab === 'QR'
                 ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/30'
                 : 'text-slate-400 hover:text-white'
@@ -264,19 +264,19 @@ export const ReceiveView: React.FC<ReceiveViewProps> = ({
         {errorMessage && (
           <div className="mb-6 p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs sm:text-sm flex items-start gap-3 animate-fadeIn">
             <AlertCircle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
-            <div>{errorMessage}</div>
+            <div className="flex-1 leading-relaxed">{errorMessage}</div>
           </div>
         )}
 
         {/* TAB 1: 5-DIGIT CODE ENTRY */}
         {activeTab === 'CODE' && (
-          <div className="space-y-8 text-center">
+          <div className="space-y-6 sm:space-y-8 text-center">
             <div>
-              <label className="text-xs font-bold text-slate-300 uppercase tracking-widest block mb-4">
+              <label className="text-[11px] font-bold text-slate-300 uppercase tracking-widest block mb-4">
                 Enter 5-Digit Transfer PIN
               </label>
 
-              <div className="flex items-center justify-center gap-2 sm:gap-3.5" onPaste={handlePaste}>
+              <div className="flex items-center justify-center gap-2 sm:gap-3.5 max-w-sm mx-auto" onPaste={handlePaste}>
                 {otpDigits.map((digit, idx) => (
                   <input
                     key={idx}
@@ -288,7 +288,7 @@ export const ReceiveView: React.FC<ReceiveViewProps> = ({
                     value={digit}
                     onChange={e => handleDigitChange(idx, e.target.value)}
                     onKeyDown={e => handleKeyDown(idx, e)}
-                    className="otp-input w-12 h-16 sm:w-14 sm:h-18 rounded-2xl bg-black/30 border border-white/20 text-center font-heading text-2xl sm:text-3xl font-extrabold text-white focus:outline-none transition-all duration-200"
+                    className="otp-input flex-1 max-w-[56px] min-w-[42px] aspect-[1/1.2] rounded-2xl bg-black/30 border border-white/20 text-center font-heading text-2xl sm:text-3xl font-extrabold text-white focus:outline-none transition-all duration-200"
                   />
                 ))}
               </div>
@@ -297,7 +297,7 @@ export const ReceiveView: React.FC<ReceiveViewProps> = ({
             <button
               onClick={() => handleConnectWithCode(otpDigits.join(''))}
               disabled={!isCodeComplete || isConnecting}
-              className={`w-full py-4 rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-bold text-sm shadow-xl flex items-center justify-center gap-2 transition-all duration-300 ${
+              className={`w-full py-3.5 sm:py-4 rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-bold text-xs sm:text-sm shadow-xl flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer ${
                 !isCodeComplete || isConnecting
                   ? 'opacity-50 cursor-not-allowed'
                   : 'hover:scale-[1.01] hover:shadow-indigo-500/30 active:scale-[0.99]'
@@ -320,11 +320,11 @@ export const ReceiveView: React.FC<ReceiveViewProps> = ({
 
         {/* TAB 2: QR SCANNER CAMERA FEED */}
         {activeTab === 'QR' && (
-          <div className="space-y-6 text-center">
+          <div className="space-y-5 text-center">
             {cameraPermissionError ? (
               <div className="p-6 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs space-y-4">
                 <Camera className="w-8 h-8 text-amber-400 mx-auto" />
-                <p>{cameraPermissionError}</p>
+                <p className="leading-relaxed">{cameraPermissionError}</p>
 
                 <div className="pt-2">
                   <label className="px-4 py-3 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/30 text-white font-bold text-xs inline-flex items-center gap-2 cursor-pointer transition-colors">
@@ -335,21 +335,21 @@ export const ReceiveView: React.FC<ReceiveViewProps> = ({
               </div>
             ) : (
               <div>
-                <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-black/40 shadow-inner max-w-sm mx-auto aspect-square flex items-center justify-center">
+                <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-black/40 shadow-inner max-w-xs sm:max-w-sm mx-auto aspect-square flex items-center justify-center">
                   <div id={qrReaderContainerId} className="w-full h-full" />
                   <div id="qr-file-scanner" className="hidden" />
 
                   {/* Visual Scanner Frame Overlay */}
                   {isCameraActive && (
                     <div className="absolute inset-0 pointer-events-none border-2 border-indigo-500/50 rounded-3xl flex items-center justify-center">
-                      <div className="w-48 h-48 border-2 border-indigo-400 rounded-2xl relative">
+                      <div className="w-44 h-44 sm:w-48 sm:h-48 border-2 border-indigo-400 rounded-2xl relative">
                         <div className="absolute w-full h-0.5 bg-gradient-to-r from-transparent via-indigo-400 to-transparent qr-scan-line shadow-lg shadow-indigo-500" />
                       </div>
                     </div>
                   )}
                 </div>
 
-                <p className="text-xs text-slate-400 mt-4">
+                <p className="text-xs text-slate-400 mt-3.5">
                   Point your camera directly at the sender's QR code.
                 </p>
 

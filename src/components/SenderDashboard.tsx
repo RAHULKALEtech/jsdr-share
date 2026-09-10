@@ -151,38 +151,38 @@ export const SenderDashboard: React.FC<SenderDashboardProps> = ({
   const totalPackageSize = files.reduce((acc, item) => acc + item.file.size, 0);
 
   return (
-    <div className="app-view max-w-5xl mx-auto px-4 py-8 animate-fadeIn">
+    <div className="app-view max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10 animate-fadeIn">
       {/* Navigation Header */}
-      <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/10">
+      <div className="flex items-center justify-between gap-3 mb-6 sm:mb-8 pb-4 border-b border-white/10">
         <button
           onClick={onClose}
-          className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition-all text-sm font-semibold border border-white/10"
+          className="flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-2 rounded-2xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition-all text-xs sm:text-sm font-semibold border border-white/10 cursor-pointer active:scale-95"
         >
           <ArrowLeft className="w-4 h-4" /> End Session
         </button>
 
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-mono font-bold">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-mono font-bold">
             <Clock className="w-3.5 h-3.5 text-amber-400" />
             <span>Expires in: {formatTimeRemaining(timeRemaining)}</span>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
         {/* Left Column: 5-Digit PIN & QR Code Card */}
         <div className="lg:col-span-6 space-y-6">
           {/* 5-Digit Transfer PIN Card */}
-          <div className="glass-card rounded-3xl p-6 sm:p-8 border border-white/10 text-center relative overflow-hidden">
-            <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">
+          <div className="glass-card rounded-3xl p-5 sm:p-8 border border-white/10 text-center relative overflow-hidden">
+            <div className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-2">
               5-Digit Transfer Code
             </div>
 
-            <div className="flex items-center justify-center gap-2 sm:gap-3 my-4">
+            <div className="flex items-center justify-center gap-2 sm:gap-3 my-3 sm:my-4 max-w-xs mx-auto">
               {sessionData.code.split('').map((digit, idx) => (
                 <span
                   key={idx}
-                  className="w-12 h-14 sm:w-14 sm:h-16 rounded-2xl bg-gradient-to-b from-indigo-500/20 to-purple-500/20 border border-indigo-500/40 text-indigo-200 font-heading text-3xl font-extrabold flex items-center justify-center shadow-lg shadow-indigo-500/10"
+                  className="flex-1 max-w-[56px] aspect-[1/1.15] rounded-2xl bg-gradient-to-b from-indigo-500/20 to-purple-500/20 border border-indigo-500/40 text-indigo-200 font-heading text-2xl sm:text-3xl font-extrabold flex items-center justify-center shadow-lg shadow-indigo-500/10"
                 >
                   {digit}
                 </span>
@@ -191,7 +191,7 @@ export const SenderDashboard: React.FC<SenderDashboardProps> = ({
 
             <button
               onClick={handleCopyCode}
-              className="w-full mt-3 py-3.5 rounded-2xl bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/30 text-indigo-300 font-bold text-xs flex items-center justify-center gap-2 transition-all active:scale-95"
+              className="w-full mt-2 py-3 rounded-2xl bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/30 text-indigo-300 font-bold text-xs flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer"
             >
               {copiedCode ? (
                 <>
@@ -206,35 +206,35 @@ export const SenderDashboard: React.FC<SenderDashboardProps> = ({
           </div>
 
           {/* QR Code Container */}
-          <div className="glass-card rounded-3xl p-6 sm:p-8 border border-white/10 text-center flex flex-col items-center">
-            <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-1.5">
+          <div className="glass-card rounded-3xl p-5 sm:p-8 border border-white/10 text-center flex flex-col items-center">
+            <div className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-3.5 flex items-center gap-1.5">
               <QrCode className="w-4 h-4 text-purple-400" /> Scan QR Code to Connect Device
             </div>
 
-            <div className="p-4 bg-white rounded-2xl shadow-xl shadow-purple-500/10 mb-4 inline-block">
+            <div className="p-3.5 bg-white rounded-2xl shadow-xl shadow-purple-500/10 mb-4 inline-block">
               <QRCodeSVG
                 id="sender-qr-code"
                 value={sessionData.shareUrl}
-                size={180}
+                size={170}
                 level="H"
                 includeMargin={true}
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3 w-full">
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-3 w-full">
               <button
                 onClick={handleCopyUrl}
-                className="py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
+                className="py-2.5 sm:py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer active:scale-95"
               >
                 {copiedUrl ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                {copiedUrl ? 'Copied Link' : 'Copy Link'}
+                <span>{copiedUrl ? 'Copied Link' : 'Copy Link'}</span>
               </button>
 
               <button
                 onClick={handleDownloadQr}
-                className="py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
+                className="py-2.5 sm:py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer active:scale-95"
               >
-                <Download className="w-3.5 h-3.5 text-purple-400" /> Save QR Image
+                <Download className="w-3.5 h-3.5 text-purple-400" /> <span>Save QR</span>
               </button>
             </div>
           </div>
@@ -243,7 +243,7 @@ export const SenderDashboard: React.FC<SenderDashboardProps> = ({
         {/* Right Column: Live Connection Status & Files Package */}
         <div className="lg:col-span-6 space-y-6">
           {/* Live Receiver Status */}
-          <div className="glass-card rounded-3xl p-6 sm:p-8 border border-white/10">
+          <div className="glass-card rounded-3xl p-5 sm:p-8 border border-white/10">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
                 <Users className="w-4 h-4 text-indigo-400" /> Live Connection Status
@@ -283,11 +283,11 @@ export const SenderDashboard: React.FC<SenderDashboardProps> = ({
           </div>
 
           {/* Files Package List */}
-          <div className="glass-card rounded-3xl p-6 sm:p-8 border border-white/10">
+          <div className="glass-card rounded-3xl p-5 sm:p-8 border border-white/10">
             <div className="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
               <div>
                 <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2 font-heading">
-                  <PackageCheck className="w-4 h-4 text-indigo-400" /> Batch Files Package ({files.length})
+                  <PackageCheck className="w-4 h-4 text-indigo-400" /> Batch Files ({files.length})
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">Total Size: {formatBytes(totalPackageSize)}</p>
               </div>
@@ -296,24 +296,24 @@ export const SenderDashboard: React.FC<SenderDashboardProps> = ({
               </span>
             </div>
 
-            <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
+            <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
               {files.map(item => {
                 const { category, color } = getFileTypeCategory(item.file.type, item.file.name);
                 return (
                   <div
                     key={item.id}
-                    className="p-3.5 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between gap-3 text-xs hover:border-white/20 transition-all"
+                    className="p-3 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between gap-3 text-xs hover:border-white/20 transition-all"
                   >
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className={`px-2 py-0.5 rounded text-[9px] font-bold border uppercase shrink-0 ${color}`}>
+                      <div className="flex items-center gap-2 mb-1 min-w-0">
+                        <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold border uppercase shrink-0 ${color}`}>
                           {category}
                         </span>
-                        <p className="font-semibold text-white truncate">{item.file.name}</p>
+                        <p className="font-semibold text-white truncate text-xs">{item.file.name}</p>
                       </div>
-                      <div className="flex items-center gap-3 text-slate-400">
+                      <div className="flex items-center gap-2.5 text-slate-400 text-[11px]">
                         <span>{formatBytes(item.file.size)}</span>
-                        <span className="font-mono text-[10px] text-slate-500">
+                        <span className="font-mono text-[10px] text-slate-500 truncate">
                           SHA: {formatHash(item.sha256)}
                         </span>
                       </div>

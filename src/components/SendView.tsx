@@ -170,12 +170,12 @@ export const SendView: React.FC<SendViewProps> = ({ onSessionGenerated, onCancel
   const totalSize = selectedFiles.reduce((acc, f) => acc + f.file.size, 0);
 
   return (
-    <div className="app-view max-w-4xl mx-auto px-4 py-8 animate-fadeIn">
-      <div className="surface-card glass-card rounded-3xl p-6 sm:p-10 border border-white/10 shadow-2xl">
+    <div className="app-view max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-10 animate-fadeIn">
+      <div className="surface-card glass-card rounded-3xl p-5 sm:p-8 lg:p-10 border border-white/10 shadow-2xl">
         {/* Header Alignment */}
-        <div className="flex items-center justify-between gap-4 mb-8 pb-6 border-b border-white/10">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold mb-2">
+        <div className="flex items-start justify-between gap-4 mb-6 sm:mb-8 pb-5 sm:pb-6 border-b border-white/10">
+          <div className="min-w-0 flex-1">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[11px] font-semibold mb-2">
               <Layers className="w-3.5 h-3.5" /> Multi-File Transfer Enabled
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-white font-heading tracking-tight">
@@ -189,7 +189,7 @@ export const SendView: React.FC<SendViewProps> = ({ onSessionGenerated, onCancel
           <button
             onClick={onCancel}
             disabled={isCreatingSession}
-            className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors shrink-0"
+            className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors shrink-0 active:scale-95 cursor-pointer"
             title="Cancel"
           >
             <X className="w-5 h-5" />
@@ -197,9 +197,9 @@ export const SendView: React.FC<SendViewProps> = ({ onSessionGenerated, onCancel
         </div>
 
         {errorMessage && (
-          <div className="mb-6 p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm flex items-start gap-3 animate-fadeIn">
+          <div className="mb-6 p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs sm:text-sm flex items-start gap-3 animate-fadeIn">
             <AlertCircle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
-            <div>{errorMessage}</div>
+            <div className="flex-1 leading-relaxed">{errorMessage}</div>
           </div>
         )}
 
@@ -209,7 +209,7 @@ export const SendView: React.FC<SendViewProps> = ({ onSessionGenerated, onCancel
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           onClick={() => !isCreatingSession && fileInputRef.current?.click()}
-          className={`relative border-2 border-dashed rounded-3xl p-8 sm:p-12 text-center cursor-pointer transition-all duration-300 ${
+          className={`relative border-2 border-dashed rounded-3xl p-6 sm:p-10 text-center cursor-pointer transition-all duration-300 ${
             isDragOver
               ? 'border-indigo-500 bg-indigo-500/10 scale-[1.01]'
               : 'border-white/15 bg-white/[0.02] hover:border-indigo-500/50 hover:bg-white/[0.04]'
@@ -223,36 +223,36 @@ export const SendView: React.FC<SendViewProps> = ({ onSessionGenerated, onCancel
             className="hidden"
           />
 
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-600/30 to-purple-600/30 border border-indigo-500/30 text-indigo-400 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-indigo-500/10">
-            <UploadCloud className="w-8 h-8" />
+          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-indigo-600/30 to-purple-600/30 border border-indigo-500/30 text-indigo-400 flex items-center justify-center mx-auto mb-3.5 shadow-lg shadow-indigo-500/10">
+            <UploadCloud className="w-7 h-7 sm:w-8 sm:h-8" />
           </div>
 
-          <h3 className="text-lg font-bold text-white mb-1 font-heading">
+          <h3 className="text-base sm:text-lg font-bold text-white mb-1 font-heading">
             Drag & Drop Multiple Files Here
           </h3>
-          <p className="text-xs text-indigo-300 font-semibold mb-2">
-            or <span className="underline">Click to Browse Files</span>
+          <p className="text-xs sm:text-sm text-indigo-300 font-semibold mb-1.5">
+            or <span className="underline underline-offset-2">Click to Browse Files</span>
           </p>
-          <p className="text-xs text-slate-400 max-w-md mx-auto">
+          <p className="text-[11px] sm:text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
             Select videos, audio tracks, photos, documents, ZIP archives, or code files. Add as many files as you need.
           </p>
         </div>
 
         {/* Multi-Files List & Stats Container */}
         {selectedFiles.length > 0 && (
-          <div className="mt-8 space-y-4">
-            <div className="flex flex-wrap items-center justify-between gap-2 px-1 text-xs font-semibold uppercase tracking-wider text-slate-400 border-b border-white/10 pb-3">
+          <div className="mt-6 sm:mt-8 space-y-3.5">
+            <div className="flex items-center justify-between gap-2 px-1 text-xs font-semibold uppercase tracking-wider text-slate-400 border-b border-white/10 pb-3">
               <div className="flex items-center gap-2 text-white">
                 <FolderPlus className="w-4 h-4 text-indigo-400" />
                 <span>Selected Files ({selectedFiles.length})</span>
               </div>
               
-              <div className="flex items-center gap-4">
-                <span>Total Size: <strong className="text-indigo-300 font-mono">{formatBytes(totalSize)}</strong></span>
+              <div className="flex items-center gap-3 sm:gap-4">
+                <span className="text-xs normal-case text-slate-300">Total: <strong className="text-indigo-300 font-mono font-bold">{formatBytes(totalSize)}</strong></span>
                 {!isCreatingSession && (
                   <button
                     onClick={handleClearAll}
-                    className="text-rose-400 hover:text-rose-300 hover:underline capitalize font-normal text-xs"
+                    className="text-rose-400 hover:text-rose-300 hover:underline capitalize font-medium text-xs cursor-pointer"
                   >
                     Clear All
                   </button>
@@ -260,24 +260,24 @@ export const SendView: React.FC<SendViewProps> = ({ onSessionGenerated, onCancel
               </div>
             </div>
 
-            <div className="max-h-80 overflow-y-auto space-y-3 pr-1">
+            <div className="max-h-80 overflow-y-auto space-y-2.5 pr-1">
               {selectedFiles.map(item => {
                 const { category, color } = getFileTypeCategory(item.file.type, item.file.name);
                 return (
                   <div
                     key={item.id}
-                    className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between gap-4 group transition-all hover:border-white/20"
+                    className="p-3 sm:p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between gap-3 group transition-all hover:border-white/20"
                   >
-                    <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
                       {/* Thumbnail or Category Icon */}
                       {item.thumbnailUrl ? (
                         <img
                           src={item.thumbnailUrl}
                           alt={item.file.name}
-                          className="w-12 h-12 rounded-xl object-cover border border-white/10 shrink-0"
+                          className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl object-cover border border-white/10 shrink-0"
                         />
                       ) : (
-                        <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
                           {category === 'VIDEO' && <Film className="w-5 h-5 text-purple-400" />}
                           {category === 'AUDIO' && <Music className="w-5 h-5 text-amber-400" />}
                           {category === 'IMAGE' && <ImageIcon className="w-5 h-5 text-emerald-400" />}
@@ -286,16 +286,16 @@ export const SendView: React.FC<SendViewProps> = ({ onSessionGenerated, onCancel
                       )}
 
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className={`px-2 py-0.5 rounded text-[9px] font-bold border uppercase shrink-0 ${color}`}>
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold border uppercase shrink-0 ${color}`}>
                             {category}
                           </span>
-                          <p className="text-sm font-semibold text-white truncate">{item.file.name}</p>
+                          <p className="text-xs sm:text-sm font-semibold text-white truncate">{item.file.name}</p>
                         </div>
-                        <p className="text-xs text-slate-400 mt-0.5">{formatBytes(item.file.size)}</p>
+                        <p className="text-[11px] sm:text-xs text-slate-400 mt-0.5">{formatBytes(item.file.size)}</p>
 
                         {item.status === 'UPLOADING' && (
-                          <div className="mt-2.5 w-full bg-white/10 rounded-full h-2 overflow-hidden">
+                          <div className="mt-2 w-full bg-white/10 rounded-full h-1.5 overflow-hidden">
                             <div
                               className="bg-gradient-to-r from-indigo-500 to-purple-500 h-full transition-all duration-200"
                               style={{ width: `${item.progress}%` }}
@@ -305,7 +305,7 @@ export const SendView: React.FC<SendViewProps> = ({ onSessionGenerated, onCancel
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 shrink-0">
                       {item.status === 'COMPLETED' && (
                         <FileCheck className="w-5 h-5 text-emerald-400 shrink-0" />
                       )}
@@ -315,7 +315,7 @@ export const SendView: React.FC<SendViewProps> = ({ onSessionGenerated, onCancel
                             e.stopPropagation();
                             handleRemoveFile(item.id);
                           }}
-                          className="p-2 rounded-xl text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                          className="p-2 rounded-xl text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer active:scale-95"
                           title="Remove file"
                         >
                           <X className="w-4 h-4" />
@@ -331,7 +331,7 @@ export const SendView: React.FC<SendViewProps> = ({ onSessionGenerated, onCancel
             {!isCreatingSession && (
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="w-full py-3 rounded-2xl border border-dashed border-white/20 hover:border-indigo-500/50 bg-white/[0.01] hover:bg-indigo-500/10 text-slate-300 hover:text-indigo-300 text-xs font-semibold flex items-center justify-center gap-2 transition-all"
+                className="w-full py-3 rounded-2xl border border-dashed border-white/20 hover:border-indigo-500/50 bg-white/[0.01] hover:bg-indigo-500/10 text-slate-300 hover:text-indigo-300 text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-[0.99]"
               >
                 <Plus className="w-4 h-4 text-indigo-400" /> Add More Files to Batch
               </button>
@@ -356,11 +356,11 @@ export const SendView: React.FC<SendViewProps> = ({ onSessionGenerated, onCancel
         )}
 
         {/* Footer Action Buttons */}
-        <div className="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="mt-8 pt-6 border-t border-white/10 flex flex-col-reverse sm:flex-row items-center justify-between gap-3 sm:gap-4">
           <button
             onClick={onCancel}
             disabled={isCreatingSession}
-            className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-white/5 hover:bg-white/10 text-slate-300 font-semibold text-sm transition-all"
+            className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 font-semibold text-xs sm:text-sm transition-all cursor-pointer active:scale-95"
           >
             Cancel
           </button>
@@ -368,7 +368,7 @@ export const SendView: React.FC<SendViewProps> = ({ onSessionGenerated, onCancel
           <button
             onClick={handleGenerateTransfer}
             disabled={selectedFiles.length === 0 || isCreatingSession}
-            className={`w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-bold text-sm shadow-xl shadow-indigo-500/25 flex items-center justify-center gap-2.5 transition-all duration-300 ${
+            className={`w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-bold text-xs sm:text-sm shadow-xl shadow-indigo-500/25 flex items-center justify-center gap-2.5 transition-all duration-300 cursor-pointer ${
               selectedFiles.length === 0 || isCreatingSession
                 ? 'opacity-50 cursor-not-allowed'
                 : 'hover:scale-[1.02] hover:shadow-indigo-500/40 active:scale-[0.98]'
